@@ -1,0 +1,4 @@
+.cloud-sync-status-ok {
+	color: var(--text-success);
+	font-weight: 600;
+}
