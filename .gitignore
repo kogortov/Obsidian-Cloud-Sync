@@ -1,0 +1,19 @@
+# Dependencies
+plugin/node_modules/
+
+# Build output
+plugin/main.js
+plugin/main.js.map
+
+# Server config (contains credentials)
+public_html/config.php
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
