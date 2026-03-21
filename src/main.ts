@@ -37,21 +37,21 @@ export default class CloudSyncPlugin extends Plugin {
         this.setStatus('idle');
 
         // Ribbon icon
-        this.addRibbonIcon('refresh-cw', 'Cloud Sync: Sync now', async () => {
-            await this.syncAll();
+        this.addRibbonIcon('refresh-cw', 'Cloud Sync: Sync now', () => {
+            void this.syncAll();
         });
 
         // Command palette
         this.addCommand({
             id: 'sync-now',
             name: 'Sync now',
-            callback: () => this.syncAll(),
+            callback: () => { void this.syncAll(); },
         });
 
         this.addCommand({
             id: 'login',
             name: 'Login / reconnect',
-            callback: () => this.doLogin(),
+            callback: () => { void this.doLogin(); },
         });
 
         // Settings tab
@@ -80,7 +80,7 @@ export default class CloudSyncPlugin extends Plugin {
         );
 
         this.registerEvent(
-            this.app.vault.on('delete', async (file) => {
+            this.app.vault.on('delete', (file) => {
                 const serverPath = file instanceof TFolder
                     ? this.toServerPath(file.path + '/')
                     : this.toServerPath(file.path);
@@ -91,22 +91,21 @@ export default class CloudSyncPlugin extends Plugin {
                     return;
                 }
                 if (file instanceof TFile || file instanceof TFolder) {
-                    await this.trackDelete(serverPath);
-                    await this.deleteRemote(serverPath);
+                    void this.trackDelete(serverPath).then(() => this.deleteRemote(serverPath));
                 }
             })
         );
 
         this.registerEvent(
-            this.app.vault.on('rename', async (file, oldPath) => {
+            this.app.vault.on('rename', (file, oldPath) => {
                 if (file instanceof TFile) {
-                    await this.trackDelete(this.toServerPath(oldPath));
-                    await this.deleteRemote(this.toServerPath(oldPath));
+                    void this.trackDelete(this.toServerPath(oldPath))
+                        .then(() => this.deleteRemote(this.toServerPath(oldPath)));
                     this.pendingUpload.add(file.path);
                     this.debouncedSync();
                 } else if (file instanceof TFolder) {
-                    await this.trackDelete(this.toServerPath(oldPath + '/'));
-                    await this.deleteRemote(this.toServerPath(oldPath + '/'));
+                    void this.trackDelete(this.toServerPath(oldPath + '/'))
+                        .then(() => this.deleteRemote(this.toServerPath(oldPath + '/')));
                     this.pendingFolderUpload.add(file.path);
                     this.debouncedSync();
                 }
@@ -117,7 +116,7 @@ export default class CloudSyncPlugin extends Plugin {
         if (this.settings.token && this.settings.serverUrl) {
             this.app.workspace.onLayoutReady(() => {
                 // Additional small delay after layout ready to ensure file cache is populated
-                setTimeout(() => this.syncAll(), 1000);
+                setTimeout(() => { void this.syncAll(); }, 1000);
             });
         }
     }
@@ -139,11 +138,7 @@ export default class CloudSyncPlugin extends Plugin {
     }
 
     private generateDeviceName(): string {
-        // @ts-ignore – Electron only
-        const hostname = (typeof require !== 'undefined')
-            ? (() => { try { return require('os').hostname(); } catch { return ''; } })()
-            : '';
-        return hostname || `Device-${Math.random().toString(36).slice(2, 7)}`;
+        return `Device-${Math.random().toString(36).slice(2, 7)}`;
     }
 
     // ── Status bar ────────────────────────────────────────────────────────────
@@ -167,7 +162,7 @@ export default class CloudSyncPlugin extends Plugin {
             // Use full sync instead of uploadPending so that every save goes
             // through conflict detection (compares hashes, creates conflict
             // copies when both devices edited the same file).
-            this.syncAll();
+            void this.syncAll();
         }, 2000);
     }
 
@@ -572,10 +567,8 @@ export default class CloudSyncPlugin extends Plugin {
             const folder = this.app.vault.getAbstractFileByPath(folderPath);
             if (folder instanceof TFolder) {
                 try {
-                    await this.app.vault.trash(folder, true);
-                } catch {
-                    try { await this.app.vault.delete(folder, true); } catch { /* ignore */ }
-                }
+                    await this.app.fileManager.trashFile(folder);
+                } catch { /* ignore */ }
             } else {
                 this.syncDeletingPaths.delete(serverPath);
             }
@@ -584,10 +577,8 @@ export default class CloudSyncPlugin extends Plugin {
         const file = this.app.vault.getAbstractFileByPath(path);
         if (file instanceof TFile) {
             try {
-                await this.app.vault.trash(file, true);
-            } catch {
-                await this.app.vault.delete(file);
-            }
+                await this.app.fileManager.trashFile(file);
+            } catch { /* ignore */ }
         } else {
             this.syncDeletingPaths.delete(serverPath);
         }
