@@ -1,0 +1,10 @@
+{
+  "id": "cloud-sync-shared-hosting",
+  "name": "Cloud Sync (Shared Hosting)",
+  "version": "1.0.0",
+  "minAppVersion": "1.0.0",
+  "description": "Use the space on your virtual (shared) hosting account to create your own cloud for syncing Obsidian notes. This is the perfect solution if you already have a PHP-supported plan and want to save money on services like Dropbox or iCloud.",
+  "author": "Kirill Savinov",
+  "authorUrl": "",
+  "isDesktopOnly": false
+}
