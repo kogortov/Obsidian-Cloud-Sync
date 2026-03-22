@@ -60,7 +60,7 @@ export class CloudSyncSettingTab extends PluginSettingTab {
         new Setting(containerEl)
             .setName(t('username'))
             .addText(text => text
-                .setPlaceholder('admin')
+                .setPlaceholder('e.g. admin')
                 .setValue(this.plugin.settings.username)
                 .onChange(async (value) => {
                     this.plugin.settings.username = value;

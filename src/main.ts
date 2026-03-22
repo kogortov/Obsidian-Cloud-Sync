@@ -37,7 +37,7 @@ export default class CloudSyncPlugin extends Plugin {
         this.setStatus('idle');
 
         // Ribbon icon
-        this.addRibbonIcon('refresh-cw', 'Cloud Sync: Sync now', () => {
+        this.addRibbonIcon('refresh-cw', 'Sync now', () => {
             void this.syncAll();
         });
 
