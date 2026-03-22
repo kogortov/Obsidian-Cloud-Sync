@@ -21,7 +21,7 @@ export class CloudSyncSettingTab extends PluginSettingTab {
         const t = (key: string) => this.plugin.t(key);
         containerEl.empty();
 
-        containerEl.createEl('h2', { text: t('title') });
+        new Setting(containerEl).setName(t('title')).setHeading();
         containerEl.createEl('p', {
             text: t('desc'),
             cls: 'setting-item-description',
@@ -44,7 +44,7 @@ export class CloudSyncSettingTab extends PluginSettingTab {
 
         // ── Connection ────────────────────────────────────────────────────────
 
-        containerEl.createEl('h3', { text: t('connection') });
+        new Setting(containerEl).setName(t('connection')).setHeading();
 
         new Setting(containerEl)
             .setName(t('serverUrl'))
@@ -83,7 +83,7 @@ export class CloudSyncSettingTab extends PluginSettingTab {
             .setName(t('deviceName'))
             .setDesc(t('deviceName.desc'))
             .addText(text => text
-                .setPlaceholder('My Laptop')
+                .setPlaceholder('My laptop')
                 .setValue(this.plugin.settings.deviceName)
                 .onChange(async (value) => {
                     this.plugin.settings.deviceName = value;
@@ -126,7 +126,7 @@ export class CloudSyncSettingTab extends PluginSettingTab {
 
         // ── Sync behaviour ────────────────────────────────────────────────────
 
-        containerEl.createEl('h3', { text: t('syncBehaviour') });
+        new Setting(containerEl).setName(t('syncBehaviour')).setHeading();
 
         new Setting(containerEl)
             .setName(t('syncOnSave'))
@@ -140,7 +140,7 @@ export class CloudSyncSettingTab extends PluginSettingTab {
 
         // ── Manual sync ───────────────────────────────────────────────────────
 
-        containerEl.createEl('h3', { text: t('manualActions') });
+        new Setting(containerEl).setName(t('manualActions')).setHeading();
 
         new Setting(containerEl)
             .setName(t('syncNow'))

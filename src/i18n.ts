@@ -2,7 +2,7 @@ export type Lang = 'en' | 'ru';
 
 export const i18n: Record<Lang, Record<string, string>> = {
     en: {
-        title:             'Cloud Sync (Shared Hosting)',
+        title:             'Cloud Sync (shared hosting)',
         desc:              'Sync Obsidian notes via your own shared hosting. Enter your server details below.',
         connection:        'Connection',
         serverUrl:         'Server URL',
@@ -41,7 +41,7 @@ export const i18n: Record<Lang, Record<string, string>> = {
         changes:           'changes',
     },
     ru: {
-        title:             'Cloud Sync (Shared Hosting)',
+        title:             'Cloud Sync (shared hosting)',
         desc:              'Синхронизация заметок Obsidian через свой хостинг. Введите данные сервера ниже.',
         connection:        'Подключение',
         serverUrl:         'URL сервера',
