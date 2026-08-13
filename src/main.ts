@@ -116,7 +116,7 @@ export default class CloudSyncPlugin extends Plugin {
         if (this.settings.token && this.settings.serverUrl) {
             this.app.workspace.onLayoutReady(() => {
                 // Additional small delay after layout ready to ensure file cache is populated
-                setTimeout(() => { void this.syncAll(); }, 1000);
+                window.setTimeout(() => { void this.syncAll(); }, 1000);
             });
         }
     }
@@ -127,7 +127,8 @@ export default class CloudSyncPlugin extends Plugin {
     // ── Settings ──────────────────────────────────────────────────────────────
 
     async loadSettings() {
-        this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+        const loaded = await this.loadData() as Partial<CloudSyncSettings> | null;
+        this.settings = Object.assign({}, DEFAULT_SETTINGS, loaded);
         if (!this.settings.deviceName) {
             this.settings.deviceName = this.generateDeviceName();
         }
@@ -261,14 +262,16 @@ export default class CloudSyncPlugin extends Plugin {
 
             this.checkHtmlResponse(res.text);
 
-            if (res.status === 200 && res.json?.token) {
-                this.settings.token = res.json.token;
+            const data = res.json as { token?: string; error?: string } | null;
+
+            if (res.status === 200 && data?.token) {
+                this.settings.token = data.token;
                 await this.saveSettings();
                 new Notice('Cloud Sync: ' + this.t('loggedInOk'));
                 return true;
             }
 
-            new Notice('Cloud Sync: ' + this.t('loginFailed') + ' — ' + (res.json?.error ?? 'Unknown error'));
+            new Notice('Cloud Sync: ' + this.t('loginFailed') + ' — ' + (data?.error ?? 'Unknown error'));
             return false;
         } catch (e) {
             const msg = e instanceof Error && e.message === 'HTML_RESPONSE'
@@ -350,7 +353,7 @@ export default class CloudSyncPlugin extends Plugin {
 
             const msg = ops > 0 ? `${ops} ${this.t('changes')}` : this.t('upToDate');
             this.setStatus('ok', msg);
-            setTimeout(() => this.setStatus('idle'), 3000);
+            window.setTimeout(() => this.setStatus('idle'), 3000);
 
         } catch (e: unknown) {
             const msg = String(e);
@@ -417,14 +420,14 @@ export default class CloudSyncPlugin extends Plugin {
             }
         }
         this.setStatus('ok', `${ok}`);
-        setTimeout(() => this.setStatus('idle'), 2000);
+        window.setTimeout(() => this.setStatus('idle'), 2000);
     }
 
     // ── File helpers ──────────────────────────────────────────────────────────
 
     private async buildLocalManifest(): Promise<Array<{ path: string; hash: string; mtime: number }>> {
         const files = this.app.vault.getFiles();
-        const result = [];
+        const result: Array<{ path: string; hash: string; mtime: number }> = [];
 
         // Track which folders contain files
         const foldersWithFiles = new Set<string>();
@@ -453,7 +456,7 @@ export default class CloudSyncPlugin extends Plugin {
                 } catch (e) {
                     if (attempt < MAX_READ_RETRIES) {
                         // Brief delay before retry
-                        await new Promise(r => setTimeout(r, 200 * (attempt + 1)));
+                        await new Promise(r => window.setTimeout(r, 200 * (attempt + 1)));
                     } else {
                         console.warn(`Cloud Sync: failed to read file "${file.path}" after ${MAX_READ_RETRIES + 1} attempts, skipping:`, e);
                     }
