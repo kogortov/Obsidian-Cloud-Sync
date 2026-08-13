@@ -2,7 +2,7 @@
   "id": "cloud-sync-shared-hosting",
   "name": "Cloud Sync (Shared Hosting)",
   "version": "1.0.0",
-  "minAppVersion": "1.0.0",
+  "minAppVersion": "1.6.6",
   "description": "Sync notes via your own shared hosting with PHP. Self-hosted, private, bidirectional cloud sync.",
   "author": "Kirill Savinov",
   "authorUrl": "https://github.com/kogortov",
